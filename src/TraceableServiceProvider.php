@@ -22,8 +22,8 @@ class TraceableServiceProvider extends ServiceProvider {
         $table = $primaryKey = null;
         if ($userClass) {
             $user = new $userClass;
-            $table = $userClass->getTable();
-            $primaryKey = $userClass->getKeyName();
+            $table = $user->getTable();
+            $primaryKey = $user->getKeyName();
         }
         Blueprint::macro('traceable', function() use ($table, $primaryKey) {
             $this->integer('created_by')->unsigned()->nullable();
