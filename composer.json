@@ -1,0 +1,9 @@
+{
+    "name": "mjm/traceable",
+    "description": "Add traceable attributes to models.",
+    "autoload": {
+        "psr-4": {
+            "MJM\\Traceable\\": "src"
+        }
+    }
+}
