@@ -5,5 +5,15 @@
         "psr-4": {
             "MJM\\Traceable\\": "src"
         }
+    },
+    "extra":{
+        "laravel": {
+            "providers": [
+                "MJM\\Traceable\\TraceableServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "laravel/framework": "^5.8"
     }
 }
