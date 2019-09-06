@@ -3,6 +3,7 @@
 namespace MJM\Traceable;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use MJM\Traceable\Configuration\Constants;
 
@@ -18,16 +19,25 @@ class TraceableServiceProvider extends ServiceProvider {
     public function register()
     {
         $userClass = config(Constants::USER_CLASS_REFERENCE);
+        if (!$userClass) {
+            $userClass = Constants::USER_CLASS;
+        }
         $user = new $userClass;
         $table = $userClass->getTable();
         $primaryKey = $userClass->getKey();
         Blueprint::macro('traceable', function() use ($table, $primaryKey) {
+            Schema::table($table, function(Blueprint $bp) use ($primaryKey) {
+                $bp->increments($primaryKey)->change();
+            });
             $this->integer('created_by')->unsigned()->nullable();
             $this->integer('updated_by')->unsigned()->nullable();
             $this->foreign('created_by', sprintf('fk_%s_created_by_%s_%s', $this->getTable(), $table, $primaryKey))->references($primaryKey)->on($table);
             $this->foreign('updated_by', sprintf('fk_%s_updated_by_%s_%s', $this->getTable(), $table, $primaryKey))->references($primaryKey)->on($table);
         }); 
-        Blueprint::macro('softDeletesTraceable', function() {
+        Blueprint::macro('softDeletesTraceable', function() use ($table, $primaryKey) {
+            Schema::table($table, function(Blueprint $bp) use ($primaryKey) {
+                $bp->increments($primaryKey)->change();
+            });
             $this->integer('deleted_by')->unsigned()->nullable();
             $this->foreign('deleted_by', sprintf('fk_%s_deleted_by_%s_%s', $this->getTable(), $table, $primaryKey))->references($primaryKey)->on($table);
         });
