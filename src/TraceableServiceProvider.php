@@ -32,8 +32,8 @@ class TraceableServiceProvider extends ServiceProvider {
                 Schema::table($table, function(Blueprint $bp) use ($primaryKey) {
                     $bp->increments($primaryKey)->change();
                 });
-                $this->foreign('created_by', sprintf('fk_%s_created_by_%s_%s', $this->getTable(), $table, $primaryKey))->references($primaryKey)->on($table);
-                $this->foreign('updated_by', sprintf('fk_%s_updated_by_%s_%s', $this->getTable(), $table, $primaryKey))->references($primaryKey)->on($table);
+                $this->foreign('created_by')->references($primaryKey)->on($table);
+                $this->foreign('updated_by')->references($primaryKey)->on($table);
             }
         }); 
         Blueprint::macro('softDeletesTraceable', function() use ($table, $primaryKey) {
@@ -42,15 +42,19 @@ class TraceableServiceProvider extends ServiceProvider {
                 Schema::table($table, function(Blueprint $bp) use ($primaryKey) {
                     $bp->increments($primaryKey)->change();
                 });
-                $this->foreign('deleted_by', sprintf('fk_%s_deleted_by_%s_%s', $this->getTable(), $table, $primaryKey))->references($primaryKey)->on($table);
+                $this->foreign('deleted_by')->references($primaryKey)->on($table);
             }
         });
         Blueprint::macro('dropTraceable', function() {
+            Schema::disableForeignKeyConstraints();
             $this->dropColumn('created_by');
             $this->dropColumn('updated_by');
+            Schema::enableForeignKeyConstraints();
         });
         Blueprint::macro('dropSoftDeletesTraceable', function() {
+            Schema::disableForeignKeyConstraints();
             $this->dropColumn('deleted_by');
+            Schema::enableForeignKeyConstraints();
         });
     }
 }
